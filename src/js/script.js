@@ -89,10 +89,10 @@
       thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
       thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
+      thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
 
       thisProduct.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget);
     }
-
 
     initAccordion() {
       const thisProduct = this;
@@ -115,11 +115,22 @@
     initOrderForm() {
       const thisProduct = this;
 
+      thisProduct.form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
+
       for (let input of thisProduct.formInputs) {
         input.addEventListener('change', function() {
           thisProduct.processOrder();
         });
       }
+
+      thisProduct.cartButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        thisProduct.addToCart();
+        thisProduct.processOrder();
+      });
     }
 
     processOrder() {
@@ -152,7 +163,9 @@
           }
         }
       }
-      price = thisProduct.amountWidget.value;
+      thisProduct.priceSingle = price;
+      price *= thisProduct.amountWidget.value;
+      thisProduct.price = price;
       thisProduct.priceElem.innerHTML = price;
     }
 
@@ -163,6 +176,48 @@
       thisProduct.amountWidgetElem.addEventListener('updated', function() {
         thisProduct.processOrder();
       });
+    }
+
+    addToCart() {
+      const thisProduct = this;
+      app.cart.add(thisProduct.prepareCartProduct());
+    }
+
+    prepareCartProduct() {
+      const thisProduct = this;
+      const productSummary = {
+        params: {}
+      };
+      productSummary.id = thisProduct.id;
+      productSummary.name = thisProduct.data.name;
+      productSummary.amount = thisProduct.amountWidget.value;
+      productSummary.price = thisProduct.price;
+      productSummary.priceSingle = thisProduct.priceSingle;
+      productSummary.params = thisProduct.prepareCartProductParams();
+      return productSummary;
+    }
+
+    prepareCartProductParams() {
+      const thisProduct = this;
+      const formData = utils.serializeFormToObject(thisProduct.form);
+      const cartProductParams = {};
+
+      for (let param in thisProduct.data.params) {
+        const thisParam = thisProduct.data.params[param];
+        cartProductParams[param] = {
+          label: thisParam.label,
+          options: {}
+        };
+        for (let option in thisProduct.data.params[param].options) {
+          const thisOption = thisParam.options[option];
+          const isSelected = formData[param] && formData[param].includes(option);
+
+          if (isSelected) {
+            cartProductParams[param].options[option] = thisOption.label;
+          }
+        }
+      }
+      return cartProductParams;
     }
   }
 
@@ -225,12 +280,34 @@
       const thisCart = this;
       thisCart.products = [];
       thisCart.getElements(element);
+      thisCart.initActions();
     }
 
     getElements(element) {
       const thisCart = this;
       thisCart.dom = {};
       thisCart.dom.wrapper = element;
+      // thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
+      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector('.cart__summary');
+      // thisCart.dom.productList = document.querySelector(select.cart.productList);
+      thisCart.dom.productList = document.querySelector('.cart__order-summary');
+    }
+
+    initActions() {
+      const thisCart = this;
+      thisCart.dom.toggleTrigger.addEventListener('click', function() {
+        // thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+        thisCart.dom.wrapper.classList.toggle('.active');
+      });
+    }
+
+    add(menuProduct) {
+      const thisCart = this;
+      console.log(menuProduct);
+
+      const generatedHtml = templates.menuProduct(menuProduct);
+      const generatedDOM = utils.createDOMFromHTML(generatedHtml);
+      thisCart.dom.productList.appendChild(generatedDOM);
     }
   }
 
