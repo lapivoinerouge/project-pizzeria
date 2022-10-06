@@ -385,8 +385,11 @@
       }
       if (thisCart.totalNumber > 0) {
         thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee;
+        thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
+      } else {
+        thisCart.totalPrice = 0;
+        thisCart.dom.deliveryFee.innerHTML = 0;
       }
-      thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
       thisCart.dom.totalNumber.innerHTML = thisCart.totalNumber;
       thisCart.dom.subtotalPrice.innerHTML = thisCart.subtotalPrice;
 
@@ -421,7 +424,6 @@
       payload.totalNumber = thisCart.totalNumber;
       payload.deliveryFee = thisCart.deliveryFee;
       payload.products = [];
-      console.log(payload);
 
       for(let prod of thisCart.products) {
         payload.products.push(prod.getData());
@@ -531,15 +533,12 @@
           return rawResponse.json();
         })
         .then((parsedResponse) => {
-          console.log('parsedResponse', parsedResponse);
           /* save parsedResponse at thisApp.data.products */
           thisApp.data.products = parsedResponse;
 
           /* execute initMenu method */
           thisApp.initMenu();
         });
-
-      console.log('thisApp.data', JSON.stringify(thisApp.data));
     },
 
     initCart: function() {
