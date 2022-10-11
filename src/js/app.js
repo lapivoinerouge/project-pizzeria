@@ -1,4 +1,4 @@
-import {settings, select} from './settings.js';
+import {settings, select, classNames} from './settings.js';
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
 
@@ -45,7 +45,74 @@ const app = {
 
     thisApp.initData();
     thisApp.initCart();
+    thisApp.initPages();
   },
+
+  initPages: function() {
+    const thisApp = this;
+
+    /* get container with pages */
+    thisApp.pages = document.querySelector(select.containerOf.pages).children;
+    /* nav links */
+    thisApp.navLinks = document.querySelectorAll(select.nav.links);
+
+    /* get id of first page */
+    // thisApp.activatePage(thisApp.pages[0].id);
+
+    /* code below won't work when we type what doesn't exist in url */
+    const idFromHash = window.location.hash.replace('#/', '');
+
+    let pageMatchingHash = thisApp.pages[0].id;
+
+    for (let page of thisApp.pages) {
+      if (page.id == idFromHash) {
+        pageMatchingHash = page.id;
+        break;
+      }
+    }
+
+    thisApp.activatePage(pageMatchingHash);
+
+    /* add event listeners to links */
+    for (let link of thisApp.navLinks) {
+      link.addEventListener('click', function() {
+        const clickedElement = this;
+        event.preventDefault();
+
+        /* get id from attribute href - replace # with empty string */
+        const id = clickedElement.getAttribute('href').replace('#', '');
+
+        /* run thisApp.activatePage with this id */
+        thisApp.activatePage(id);
+
+        /* change URL hash - the end of page address */
+        /* slash is after # prevents scrolling page up when changed URL hash */
+        window.location.hash = '#/' + id;
+      });
+    }
+
+  },
+
+  activatePage: function(pageId) {
+    const thisApp = this;
+
+    /* add class active to matching pages and remove from non-matching */
+    for (let page of thisApp.pages) {
+      /* to not repeat code - we can use toggle with second arg - conditon */
+      page.classList.toggle(
+        classNames.pages.active,
+        page.id == pageId);
+    }
+
+    /* add class active to matching links and remove from non-matching */
+    for (let link of thisApp.navLinks) {
+      /* to not repeat code - we can use toggle with second arg - conditon */
+      link.classList.toggle(
+        classNames.nav.active,
+        link.getAttribute('href') == '#' + pageId
+      );
+    }
+  }
 };
 
 app.init();
