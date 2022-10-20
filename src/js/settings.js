@@ -108,11 +108,11 @@ export const settings = {
   },
 
   db: {
-    url: '//localhost:3131',
+    url: 'http://localhost:3131',
     products: 'products',
     orders: 'orders',
-    booking: 'booking',
-    event: 'event',
+    booking: 'bookings',
+    event: 'events',
     dateStartParamKey: 'date_gte',
     dateEndParamKey: 'date_lte',
     notRepeatParam: 'repeat=false',
@@ -128,7 +128,7 @@ export const settings = {
     maxDaysInFuture: 14,
   },
 
-  booking: {
+  bookings: {
     tableIdAttribute: 'data-table',
   },
 };
