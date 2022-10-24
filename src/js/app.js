@@ -2,6 +2,7 @@ import {settings, select, classNames} from './settings.js';
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
 import Booking from './components/Booking.js';
+import Home from './components/Home.js';
 
 const app = {
   initMenu: function() {
@@ -50,7 +51,7 @@ const app = {
     thisApp.navLinks = document.querySelectorAll(select.nav.links);
 
     /* get id of first page */
-    // thisApp.activatePage(thisApp.pages[0].id);
+    thisApp.activatePage(thisApp.pages[0].id);
 
     /* code below won't work when we type what doesn't exist in url */
     const idFromHash = window.location.hash.replace('#/', '');
@@ -114,11 +115,19 @@ const app = {
     thisApp.booking = new Booking(bookingWrapper);
   },
 
+  initHome: function() {
+    const thisApp = this;
+    const homeWrapper = document.querySelector(select.containerOf.home);
+
+    thisApp.home = new Home(homeWrapper);
+  },
+
   init: function() {
     const thisApp = this;
 
     thisApp.initData();
     thisApp.initCart();
+    thisApp.initHome();
     thisApp.initPages();
     thisApp.initBooking();
   },
