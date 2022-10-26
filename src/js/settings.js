@@ -59,7 +59,6 @@ export const select = {
 
   nav: {
     links: '.main-nav a, a.logo',
-    homeLink: '',
   },
 
   cart: {
@@ -119,7 +118,7 @@ export const settings = {
   },
 
   db: {
-    url: 'http://localhost:3131',
+    url: '//' + window.location.hostname + (window.location.hostname=='localhost' ? ':3131' : ''),
     products: 'products',
     orders: 'orders',
     booking: 'bookings',
